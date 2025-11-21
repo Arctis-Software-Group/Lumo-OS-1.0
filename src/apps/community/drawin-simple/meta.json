@@ -1,0 +1,15 @@
+{
+    "id": "drawin-simple",
+    "name": "Drawin Simple",
+    "icon": "fa-solid fa-paintbrush",
+    "color": "#FF69B4",
+    "category": "Creative",
+    "description": "Simple drawing app. Export your art.",
+    "features": [
+        "Drawing",
+        "Export",
+        "Layers"
+    ],
+    "creator": "Takada",
+    "verified": true
+}

@@ -1,0 +1,14 @@
+{
+    "id": "lumo-dev",
+    "name": "Lumo Dev",
+    "icon": "fa-solid fa-code",
+    "color": "#00ff9d",
+    "category": "Developer Tools",
+    "tagline": "Code, Preview, Ship.",
+    "description": "A lightweight yet powerful IDE for HTML, CSS, and JS. Features live preview, syntax highlighting, and project export.",
+    "features": [
+        "Live Preview",
+        "Syntax Highlighting",
+        "Project Export"
+    ]
+}

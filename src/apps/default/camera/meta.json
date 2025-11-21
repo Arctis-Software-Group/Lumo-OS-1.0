@@ -1,0 +1,15 @@
+{
+    "id": "camera",
+    "name": "Camera",
+    "icon": "fa-solid fa-camera",
+    "color": "#ffffff",
+    "category": "Creativity",
+    "tagline": "Capture the moment.",
+    "description": "Simple, elegant camera app with Lumo OS watermark capability.",
+    "features": [
+        "Watermark",
+        "Filters",
+        "HD Capture"
+    ],
+    "comingSoon": false
+}

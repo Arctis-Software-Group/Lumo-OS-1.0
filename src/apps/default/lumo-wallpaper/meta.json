@@ -1,0 +1,14 @@
+{
+    "id": "lumo-wallpaper",
+    "name": "Lumo Wallpaper",
+    "icon": "fa-solid fa-image",
+    "color": "#8e44ad",
+    "category": "Personalization",
+    "tagline": "Redefine your desktop.",
+    "description": "Choose from a curated collection of wallpapers, from solid colors to abstract art.",
+    "features": [
+        "4K Ready",
+        "Solid Colors",
+        "Live Preview"
+    ]
+}

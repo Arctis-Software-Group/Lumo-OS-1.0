@@ -1,0 +1,76 @@
+{
+  "app": {
+    "languageSaved": "設定はローカルに保存されます",
+    "language": "言語",
+    "english": "English (デフォルト)",
+    "japanese": "日本語 (サブ)",
+    "chinese": "中国語"
+  },
+  "store": {
+    "install": "インストール",
+    "installed": "インストール済み",
+    "uninstall": "アンインストール",
+    "uninstallConfirm": "このアプリをアンインストールしてもよろしいですか？",
+    "uninstalled": "アンインストールされました"
+  },
+  "aiLab": {
+    "title": "AI アプリラボ",
+    "comShort": "Comming Soon",
+    "notice": "AI ビルドラボが \"Comming Soon\" の間、カタログは手作りのネイティブを販売しています。"
+  },
+  "photoPro": {
+    "title": "Nothing OS レンズ",
+    "hint": "Nothing OS風のスタイル。英語がメインです。",
+    "tonalPlay": "トーン調整",
+    "exposure": "露出",
+    "contrast": "コントラスト",
+    "saturation": "彩度",
+    "highlights": "ハイライト",
+    "shadows": "シャドウ",
+    "magicLens": "マジックレンズ",
+    "quickUpload": "クイックアップロード",
+    "exportWatermark": "Lumo の透かしを付けてエクスポート",
+    "about": "Photo ProはLumo Storeにあり、インストールするとNothing OS風のUIになります。"
+  },
+  "cmd": {
+    "help": "利用可能なコマンド: help, date, time, uptime, apps, open <app>, close <app>, ls <folder>, lang <code>, whoami, calc <expr>, clear, echo, reboot, about",
+    "about": "Lumo OS Cmd — UI内の小さなインタラクティブシェルです。",
+    "notRecognized": "コマンドが見つかりません。",
+    "openFail": "アプリが見つかりません",
+    "openSuccess": "開きました",
+    "closeSuccess": "閉じました",
+    "langFail": "サポート: en, ja, zh",
+    "langOk": "言語を設定しました",
+    "lsHelp": "使用法: ls <folder> — フォルダ: workspace, media, system",
+    "lsFail": "フォルダが見つかりません",
+    "calcFail": "無効な式です",
+    "whoami": "あなたは Lumo ユーザーです"
+  },
+  "login": {
+    "welcome": "ようこそ",
+    "init": "システムアカウント設定",
+    "userPlaceholder": "ユーザー名",
+    "passPlaceholder": "パスワード",
+    "secTitle": "秘密の質問",
+    "secQPlaceholder": "質問 (例: 出身小学校は？)",
+    "secAPlaceholder": "秘密の答え",
+    "startBtn": "LUMO OS を開始",
+    "guestBtn": "ゲストとして続行",
+    "newUser": "新規ユーザー",
+    "cancel": "キャンセル",
+    "create": "作成",
+    "loginPassPlaceholder": "パスワードを入力",
+    "forgotPass": "パスワードを忘れた場合",
+    "addUser": "+ ユーザー追加",
+    "guestMode": "ゲストモード",
+    "hint": "ヒント: 123",
+    "alertMaxUsers": "ユーザー数が上限に達しました。",
+    "alertFillFields": "すべての項目を入力してください。",
+    "alertUserNotFound": "ユーザーが見つかりません。",
+    "alertNoSecQ": "このユーザーには秘密の質問が設定されていません。",
+    "alertPassIs": "あなたのパスワード: ",
+    "alertWrongAnswer": "不正解です。",
+    "promptRecoverUser": "パスワードを復旧するユーザー名を入力してください:",
+    "promptSecQ": "秘密の質問: "
+  }
+}

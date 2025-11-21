@@ -1,0 +1,15 @@
+{
+    "id": "lumora",
+    "name": "Lumora 1.0",
+    "icon": "src/apps/default/lumora/logo.png",
+    "color": "#8b5cf6",
+    "category": "AI Assistant",
+    "tagline": "Gemini 3.0 Pro Unlimited.",
+    "description": "The next generation of AI, integrated deeply into Lumo OS. Experience the power of Gemini 3.0 Pro, Grok, and more.",
+    "features": [
+        "Gemini 3.0 Pro",
+        "Multi-Model",
+        "Nothing Style"
+    ],
+    "comingSoon": false
+}

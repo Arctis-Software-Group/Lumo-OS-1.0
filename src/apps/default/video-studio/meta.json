@@ -1,0 +1,15 @@
+{
+    "id": "video-studio",
+    "name": "Video Studio",
+    "icon": "fa-solid fa-film",
+    "color": "#ff003c",
+    "category": "Creativity",
+    "tagline": "Pro editing. Simple interface.",
+    "description": "A powerful timeline-based video editor with the elegance of Lumo OS.",
+    "features": [
+        "Multi-track",
+        "4K Export",
+        "Audio Mixing"
+    ],
+    "comingSoon": false
+}

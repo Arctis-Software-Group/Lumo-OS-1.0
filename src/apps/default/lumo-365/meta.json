@@ -1,0 +1,14 @@
+{
+    "id": "lumo-365",
+    "name": "Lumo 365",
+    "icon": "src/apps/default/lumo-365/logo.png",
+    "color": "#2b579a",
+    "category": "Productivity",
+    "tagline": "Office essentials, reimagined.",
+    "description": "Create documents and presentations with a clean, distraction-free interface. Spreadsheets coming soon.",
+    "features": [
+        "Writer",
+        "Slides",
+        "Cloud Sync"
+    ]
+}

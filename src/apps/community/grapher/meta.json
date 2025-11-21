@@ -1,0 +1,15 @@
+{
+    "id": "grapher",
+    "name": "Grapher",
+    "icon": "fa-solid fa-chart-pie",
+    "color": "#00CED1",
+    "category": "Productivity",
+    "description": "Color picker and palette generator. Export codes.",
+    "features": [
+        "Color Picker",
+        "Palette",
+        "Export"
+    ],
+    "creator": "Takada",
+    "verified": true
+}

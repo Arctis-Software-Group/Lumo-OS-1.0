@@ -1,0 +1,10 @@
+{
+  "id": "photo-pro",
+  "name": "Photo Pro",
+  "icon": "fa-solid fa-camera-retro",
+  "color": "#ff6f91",
+  "tagline": "Advanced studio for cinematic control",
+  "description": "Tune exposure, contrast, and saturation before exporting with the Lumo OS 1.0 signature watermark.",
+  "features": ["Magic Lens", "Tone Sliders", "Watermark Export"],
+  "category": "Photo Lab"
+}

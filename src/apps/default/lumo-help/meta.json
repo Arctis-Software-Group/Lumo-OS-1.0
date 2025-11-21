@@ -1,0 +1,14 @@
+{
+    "id": "lumo-help",
+    "name": "Lumo Help",
+    "icon": "fa-solid fa-circle-question",
+    "color": "#3b82f6",
+    "category": "System",
+    "tagline": "Your guide to Lumo OS.",
+    "description": "Master the interface, learn shortcuts, and explore the philosophy behind Lumo OS.",
+    "features": [
+        "Guides",
+        "Shortcuts",
+        "Tips"
+    ]
+}

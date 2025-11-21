@@ -1,0 +1,14 @@
+{
+    "id": "sound-studio",
+    "name": "Sound Studio",
+    "icon": "fa-solid fa-wave-square",
+    "color": "#ff0055",
+    "category": "Creativity",
+    "tagline": "Sculpt your sound.",
+    "description": "Professional grade equalizer and 3D audio spatializer. Create immersive soundscapes directly in your browser.",
+    "features": [
+        "10-Band EQ",
+        "3D Spatializer",
+        "Waveform Viz"
+    ]
+}

@@ -1,0 +1,76 @@
+{
+  "app": {
+    "languageSaved": "偏好设置已本地保存",
+    "language": "语言",
+    "english": "英语 (默认)",
+    "japanese": "日语 (备选)",
+    "chinese": "中文"
+  },
+  "store": {
+    "install": "安装",
+    "installed": "已安装",
+    "uninstall": "卸载",
+    "uninstallConfirm": "你确定要卸载这个应用吗？",
+    "uninstalled": "应用已删除"
+  },
+  "photoPro": {
+    "title": "Nothing OS 镜头",
+    "hint": "受 Nothing OS 启发，界面以英语为主。",
+    "tonalPlay": "色调调整",
+    "exposure": "曝光",
+    "contrast": "对比度",
+    "saturation": "饱和度",
+    "highlights": "高光",
+    "shadows": "阴影",
+    "magicLens": "魔法镜头",
+    "quickUpload": "快速上传",
+    "exportWatermark": "导出并带有 Lumo 水印",
+    "about": "Photo Pro 存在于 Lumo Store 中，安装后会显示类似 Nothing OS 的界面。"
+  },
+  "aiLab": {
+    "title": "AI 应用实验室",
+    "comShort": "即将推出",
+    "notice": "在 AI 构建实验室仍处于“即将推出”阶段时，当前目录主要展示手工制作的原生应用。"
+  },
+  "cmd": {
+    "help": "可用命令: help, date, time, uptime, apps, open <app>, close <app>, ls <folder>, lang <code>, whoami, calc <expr>, clear, echo, reboot, about",
+    "about": "Lumo OS Cmd — 小型交互式命令行工具。",
+    "notRecognized": "无法识别的命令",
+    "openFail": "未找到应用",
+    "openSuccess": "已打开",
+    "closeSuccess": "已关闭",
+    "langFail": "支持的语言: en, ja, zh",
+    "langOk": "语言已设置为",
+    "lsHelp": "用法: ls <folder> — 文件夹: workspace, media, system",
+    "lsFail": "未找到文件夹",
+    "calcFail": "无效的表达式",
+    "whoami": "你是 Lumo 用户"
+  },
+  "login": {
+    "welcome": "欢迎",
+    "init": "初始化系统账户",
+    "userPlaceholder": "用户名",
+    "passPlaceholder": "密码",
+    "secTitle": "安全问题",
+    "secQPlaceholder": "问题 (例如: 你的小学是?)",
+    "secAPlaceholder": "秘密答案",
+    "startBtn": "启动 LUMO OS",
+    "guestBtn": "以访客身份继续",
+    "newUser": "新用户",
+    "cancel": "取消",
+    "create": "创建",
+    "loginPassPlaceholder": "输入密码",
+    "forgotPass": "忘记密码?",
+    "addUser": "+ 添加用户",
+    "guestMode": "访客模式",
+    "hint": "提示: 123",
+    "alertMaxUsers": "用户数量已达上限。",
+    "alertFillFields": "请填写所有字段。",
+    "alertUserNotFound": "未找到用户。",
+    "alertNoSecQ": "该用户未设置安全问题。请联系管理员。",
+    "alertPassIs": "你的密码是: ",
+    "alertWrongAnswer": "答案错误。",
+    "promptRecoverUser": "输入你的用户名以找回密码:",
+    "promptSecQ": "安全问题: "
+  }
+}
