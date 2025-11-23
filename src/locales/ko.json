@@ -1,0 +1,77 @@
+{
+  "app": {
+    "languageSaved": "Preference saved locally",
+    "language": "Language",
+    "english": "English (Default)",
+    "japanese": "Japanese (Sub)",
+    "chinese": "Chinese",
+    "korean": "Korean (Soon)"
+  },
+  "store": {
+    "install": "Install",
+    "installed": "Installed",
+    "uninstall": "Uninstall",
+    "uninstallConfirm": "Are you sure you want to uninstall this app?",
+    "uninstalled": "App removed"
+  },
+  "aiLab": {
+    "title": "AI App Lab",
+    "comShort": "Coming Soon",
+    "notice": "While the AI build lab remains in \"Coming Soon\", the catalog right now ships handcrafted natives."
+  },
+  "photoPro": {
+    "title": "Nothing OS Lens",
+    "hint": "Nothing OS style, English-first interface.",
+    "tonalPlay": "Tonal Play",
+    "exposure": "Exposure",
+    "contrast": "Contrast",
+    "saturation": "Saturation",
+    "highlights": "Highlights",
+    "shadows": "Shadows",
+    "magicLens": "Magic Lens",
+    "quickUpload": "Quick upload",
+    "exportWatermark": "Export with Lumo watermark",
+    "about": "Photo Pro lives inside the Lumo Store but drops a Nothing OS inspired UI once installed."
+  },
+  "cmd": {
+    "help": "Available commands: help, date, time, uptime, apps, open <app>, close <app>, ls <folder>, lang <code>, whoami, calc <expr>, clear, echo, reboot, about",
+    "about": "Lumo OS Cmd — a tiny interactive shell built into the UI.",
+    "notRecognized": "Command not recognized.",
+    "openFail": "Unable to find app",
+    "openSuccess": "Opened",
+    "closeSuccess": "Closed",
+    "langFail": "Supported: en, ja, zh, ko",
+    "langOk": "Language set to",
+    "lsHelp": "Usage: ls <folder> — folders: workspace, media, system",
+    "lsFail": "Folder not found",
+    "calcFail": "Invalid expression",
+    "whoami": "You are Lumo User"
+  },
+  "login": {
+    "welcome": "WELCOME",
+    "init": "INITIALIZE SYSTEM ACCOUNT",
+    "userPlaceholder": "USERNAME",
+    "passPlaceholder": "PASSWORD",
+    "secTitle": "SECURITY QUESTION",
+    "secQPlaceholder": "Question (e.g. School?)",
+    "secAPlaceholder": "Secret Answer",
+    "startBtn": "START LUMO OS",
+    "guestBtn": "CONTINUE AS GUEST",
+    "newUser": "NEW USER",
+    "cancel": "CANCEL",
+    "create": "CREATE",
+    "loginPassPlaceholder": "ENTER PASSWORD",
+    "forgotPass": "Forgot Password?",
+    "addUser": "+ Add User",
+    "guestMode": "Guest Mode",
+    "hint": "Hint: 123",
+    "alertMaxUsers": "Max users reached.",
+    "alertFillFields": "Please fill all fields.",
+    "alertUserNotFound": "User not found.",
+    "alertNoSecQ": "No security question set for this user. Contact Admin.",
+    "alertPassIs": "Your password is: ",
+    "alertWrongAnswer": "Incorrect answer.",
+    "promptRecoverUser": "Enter your username to recover password:",
+    "promptSecQ": "Security Question: "
+  }
+}

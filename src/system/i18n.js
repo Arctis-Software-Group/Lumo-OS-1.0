@@ -4,7 +4,7 @@
     window.__currentLocale = window.__currentLocale || 'en';
 
     window.i18n = {
-        load: async (paths = ['src/locales/en.json', 'src/locales/ja.json', 'src/locales/zh.json']) => {
+        load: async (paths = ['src/locales/en.json', 'src/locales/ja.json', 'src/locales/zh.json', 'src/locales/ko.json']) => {
             const results = await Promise.all(paths.map(p => fetch(p).then(r => r.ok ? r.json() : {})));
             paths.forEach((p, i) => {
                 try {

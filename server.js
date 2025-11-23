@@ -9,9 +9,21 @@ try {
   if (fs.existsSync(envPath)) {
     const envConfig = fs.readFileSync(envPath, 'utf8');
     envConfig.split('\n').forEach(line => {
-      const [key, value] = line.split('=');
-      if (key && value) {
-        process.env[key.trim()] = value.trim();
+      // Ignore comments and empty lines
+      const trimmedLine = line.trim();
+      if (!trimmedLine || trimmedLine.startsWith('#')) return;
+
+      const firstEquals = trimmedLine.indexOf('=');
+      if (firstEquals > 0) {
+        const key = trimmedLine.slice(0, firstEquals).trim();
+        const value = trimmedLine.slice(firstEquals + 1).trim();
+        
+        // Remove quotes if present
+        const unquotedValue = value.replace(/^["'](.*)["']$/, '$1');
+        
+        if (key) {
+          process.env[key] = unquotedValue;
+        }
       }
     });
   }

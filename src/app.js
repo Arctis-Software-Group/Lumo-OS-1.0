@@ -160,6 +160,7 @@ window.addEventListener('load', () => {
     renderWidgets();
     loadStoreCatalog();
     loadWallpaperPreference();
+    loadAccentPreference();
     // (language dispatch already handled after locales load)
 });
 
@@ -772,6 +773,26 @@ function initSettings(id) {
         applyTheme(currentTheme);
     }
 
+    const accentButtons = win.querySelectorAll('[data-accent]');
+    const rootStyle = getComputedStyle(root);
+    // Note: getPropertyValue might return spaces, so trim
+    const currentAccent = (localStorage.getItem('lumo_accent') || rootStyle.getPropertyValue('--accent')).trim();
+
+    accentButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+             const color = btn.dataset.accent;
+             root.style.setProperty('--accent', color);
+             localStorage.setItem('lumo_accent', color);
+             
+             accentButtons.forEach(b => b.classList.remove('ring-2', 'ring-white'));
+             btn.classList.add('ring-2', 'ring-white');
+        });
+        
+        if (btn.dataset.accent.toLowerCase() === currentAccent.toLowerCase()) {
+             btn.classList.add('ring-2', 'ring-white');
+        }
+    });
+
     const languageButtons = win.querySelectorAll('[data-language-choice]');
     const selectedLanguage = localStorage.getItem(STORAGE_KEYS.language) || 'en';
     const highlightLanguage = (lang) => {
@@ -957,6 +978,24 @@ function buildSettingsMarkup() {
                 </div>
             </section>
 
+            <section class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                     <div>
+                        <p class="text-xs uppercase tracking-[0.4em] text-gray-400">Personalization</p>
+                        <p class="text-lg font-dot">Accent Color</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-wrap" id="accent-color-options">
+                     <button data-accent="#d71921" class="w-8 h-8 rounded-full bg-[#d71921] border border-white/20 hover:scale-110 transition"></button>
+                     <button data-accent="#3b82f6" class="w-8 h-8 rounded-full bg-[#3b82f6] border border-white/20 hover:scale-110 transition"></button>
+                     <button data-accent="#10b981" class="w-8 h-8 rounded-full bg-[#10b981] border border-white/20 hover:scale-110 transition"></button>
+                     <button data-accent="#f59e0b" class="w-8 h-8 rounded-full bg-[#f59e0b] border border-white/20 hover:scale-110 transition"></button>
+                     <button data-accent="#8b5cf6" class="w-8 h-8 rounded-full bg-[#8b5cf6] border border-white/20 hover:scale-110 transition"></button>
+                     <button data-accent="#ec4899" class="w-8 h-8 rounded-full bg-[#ec4899] border border-white/20 hover:scale-110 transition"></button>
+                     <button data-accent="#ffffff" class="w-8 h-8 rounded-full bg-[#ffffff] border border-white/20 hover:scale-110 transition"></button>
+                </div>
+            </section>
+
              <section class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col gap-4">
                 <div class="flex items-center justify-between">
                      <div>
@@ -985,6 +1024,7 @@ function buildSettingsMarkup() {
                     <button data-language-choice="en" class="lang-select w-full rounded-2xl border border-white/20 px-3 py-2 text-sm">${window.i18n?.t('app.english') || 'English (Default)'}</button>
                     <button data-language-choice="ja" class="lang-select w-full rounded-2xl border border-white/20 px-3 py-2 text-sm">${window.i18n?.t('app.japanese') || '日本語 (サブ)'}</button>
                     <button data-language-choice="zh" class="lang-select w-full rounded-2xl border border-white/20 px-3 py-2 text-sm">${window.i18n?.t('app.chinese') || '中文'}</button>
+                    <button data-language-choice="ko" class="lang-select w-full rounded-2xl border border-white/20 px-3 py-2 text-sm">${window.i18n?.t('app.korean') || '한국어 (Soon)'}</button>
                 </div>
                 <p class="text-xs text-gray-400">The interface stays aligned with global language hints, but English stays primary.</p>
             </section>
@@ -1566,6 +1606,13 @@ function loadWallpaperPreference() {
             desktop.style.backgroundColor = wp.color;
         }
     } catch (e) { console.error('Failed to load wallpaper', e); }
+}
+
+function loadAccentPreference() {
+    const accent = localStorage.getItem('lumo_accent');
+    if (accent) {
+        document.documentElement.style.setProperty('--accent', accent);
+    }
 }
 
 function loadIconPositions() {
