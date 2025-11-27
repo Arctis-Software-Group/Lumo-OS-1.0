@@ -1,0 +1,17 @@
+{
+    "id": "lumo-drop",
+    "name": "LumoDrop",
+    "icon": "fa-solid fa-share-nodes",
+    "color": "#10b981",
+    "category": "Connectivity",
+    "tagline": "Share anything, instantly.",
+    "description": "Securely share files and chat with devices on your network. End-to-end encrypted file transfers with real-time messaging.",
+    "features": [
+        "E2E Encryption",
+        "Real-time Chat",
+        "Cross-Platform"
+    ],
+    "creator": "Lumo Team",
+    "verified": true,
+    "comingSoon": false
+}

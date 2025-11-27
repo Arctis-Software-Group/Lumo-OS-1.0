@@ -100,6 +100,7 @@ const storeCatalogPaths = [
     'src/apps/default/lumo-dev/meta.json',
     'src/apps/default/video-studio/meta.json',
     'src/apps/default/camera/meta.json',
+    'src/apps/default/lumo-drop/meta.json',
     'src/apps/community/drawin-simple/meta.json',
     'src/apps/community/grapher/meta.json'
 ];
@@ -445,6 +446,8 @@ function openApp(app) {
         contentHTML = window.Grapher?.buildMarkup ? window.Grapher.buildMarkup() : buildFallbackMarkup(app);
     } else if (app.id === 'lumora') {
         contentHTML = window.Lumora?.buildMarkup ? window.Lumora.buildMarkup() : buildFallbackMarkup(app);
+    } else if (app.id === 'lumo-drop') {
+        contentHTML = window.LumoDrop?.buildMarkup ? window.LumoDrop.buildMarkup() : buildFallbackMarkup(app);
     } else {
         contentHTML = buildFallbackMarkup(app);
     }
@@ -485,6 +488,7 @@ function openApp(app) {
     if (app.id === 'drawin-simple' && window.DrawinSimple?.init) window.DrawinSimple.init(win);
     if (app.id === 'grapher' && window.Grapher?.init) window.Grapher.init(win);
     if (app.id === 'lumora' && window.Lumora?.init) window.Lumora.init(win);
+    if (app.id === 'lumo-drop' && window.LumoDrop?.init) window.LumoDrop.init(win);
 
     bringToFront(winId);
 }
