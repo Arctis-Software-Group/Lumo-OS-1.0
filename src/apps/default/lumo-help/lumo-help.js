@@ -14,6 +14,10 @@
                         <button data-help-tab="shortcuts" class="w-full text-left px-4 py-3 rounded-md hover:bg-[#111] text-gray-400 hover:text-white text-sm font-medium transition font-dot uppercase">Shortcuts</button>
                         <button data-help-tab="apps" class="w-full text-left px-4 py-3 rounded-md hover:bg-[#111] text-gray-400 hover:text-white text-sm font-medium transition font-dot uppercase">Apps</button>
                         <button data-help-tab="faq" class="w-full text-left px-4 py-3 rounded-md hover:bg-[#111] text-gray-400 hover:text-white text-sm font-medium transition font-dot uppercase">FAQ</button>
+                        <div class="pt-4 mt-4 border-t border-[#333]">
+                            <button data-help-tab="terms" class="w-full text-left px-4 py-3 rounded-md hover:bg-[#111] text-gray-400 hover:text-white text-sm font-medium transition font-dot uppercase">Terms of Service</button>
+                            <button data-help-tab="privacy" class="w-full text-left px-4 py-3 rounded-md hover:bg-[#111] text-gray-400 hover:text-white text-sm font-medium transition font-dot uppercase">Privacy Policy</button>
+                        </div>
                     </nav>
                     <div class="p-4 border-t border-[#333]">
                         <div class="text-[0.65rem] text-gray-600 uppercase tracking-widest font-mono">Version 1.0</div>
@@ -99,7 +103,7 @@
         apps: `
             <h1 class="font-dot text-4xl mb-6">Applications</h1>
             <p class="text-gray-400 mb-6">Lumo OS comes with a suite of powerful apps.</p>
-            <div class="grid gap-4">
+            <div class="grid gap-4 sm:grid-cols-2">
                 <div class="flex items-center gap-4 p-4 rounded-xl border border-[#333] bg-[#111]">
                     <div class="w-12 h-12 rounded bg-[#333] flex items-center justify-center text-white"><i class="fa-solid fa-terminal"></i></div>
                     <div>
@@ -119,6 +123,34 @@
                     <div>
                         <h4 class="font-bold font-dot uppercase">Photo Pro</h4>
                         <p class="text-xs text-gray-400">Advanced photo editor with filters.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl border border-[#333] bg-[#111]">
+                    <div class="w-12 h-12 rounded bg-[#ff003c] flex items-center justify-center text-white"><i class="fa-solid fa-film"></i></div>
+                    <div>
+                        <h4 class="font-bold font-dot uppercase">Video Studio</h4>
+                        <p class="text-xs text-gray-400">Professional timeline video editor.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl border border-[#333] bg-[#111]">
+                    <div class="w-12 h-12 rounded bg-[#ff0055] flex items-center justify-center text-white"><i class="fa-solid fa-wave-square"></i></div>
+                    <div>
+                        <h4 class="font-bold font-dot uppercase">Sound Studio</h4>
+                        <p class="text-xs text-gray-400">Spatial audio mixer and equalizer.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl border border-[#333] bg-[#111]">
+                    <div class="w-12 h-12 rounded bg-[#ff4444] flex items-center justify-center text-white"><i class="fa-solid fa-comment-dots"></i></div>
+                    <div>
+                        <h4 class="font-bold font-dot uppercase">Talko</h4>
+                        <p class="text-xs text-gray-400">Secure P2P chat application.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 p-4 rounded-xl border border-[#333] bg-[#111]">
+                    <div class="w-12 h-12 rounded bg-[#8b5cf6] flex items-center justify-center text-white"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <div>
+                        <h4 class="font-bold font-dot uppercase">Lumora</h4>
+                        <p class="text-xs text-gray-400">AI Assistant powered by Gemini 3.0.</p>
                     </div>
                 </div>
             </div>
@@ -146,6 +178,49 @@
                         These are simulated web apps designed specifically for this environment.
                     </div>
                 </details>
+            </div>
+        `,
+        terms: `
+            <h1 class="font-dot text-4xl mb-6">Terms of Service</h1>
+            <div class="space-y-6 font-mono text-sm text-gray-400 leading-relaxed">
+                <p>By using Lumo OS, you agree to the following terms:</p>
+                
+                <div class="p-4 border border-red-900/30 bg-red-900/10 rounded-xl">
+                    <h3 class="text-white font-bold mb-2 font-dot uppercase text-lg">Prohibited Activities</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Unauthorized access to system files or other user data.</li>
+                        <li>Using the platform for any illegal activities.</li>
+                        <li>Abuse of P2P communication features for harassment or distribution of illegal content.</li>
+                        <li>Reverse engineering or modifying the core OS without authorization (except for permitted dev tools).</li>
+                    </ul>
+                </div>
+
+                <p>
+                    Lumo OS is provided "AS IS", without warranty of any kind. We are not responsible for any data loss or damages arising from the use of this software.
+                </p>
+            </div>
+        `,
+        privacy: `
+            <h1 class="font-dot text-4xl mb-6">Privacy Policy</h1>
+            <div class="space-y-6 font-mono text-sm text-gray-400 leading-relaxed">
+                <p>Your privacy is important to us. Here is how we handle your data:</p>
+                
+                <div class="nothing-card">
+                    <h3 class="text-white font-bold mb-2 font-dot uppercase text-lg">Data Storage</h3>
+                    <p>
+                        All your data (notes, settings, installed apps) is stored locally on your device using LocalStorage. 
+                        We do not upload your personal files to any central server.
+                    </p>
+                </div>
+
+                <div class="nothing-card">
+                    <h3 class="text-white font-bold mb-2 font-dot uppercase text-lg">Communication</h3>
+                    <p>
+                        Communication features (like Talko) use direct P2P connections or temporary relays where applicable. 
+                        <span class="text-[var(--accent)]">Administrators cannot view the content of your private messages.</span>
+                        Your conversations are private and secure.
+                    </p>
+                </div>
             </div>
         `
     };

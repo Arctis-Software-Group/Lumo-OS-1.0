@@ -27,11 +27,11 @@ class LumoDrop {
         this.pendingFiles = [];
         this.typingTimeout = null;
         this.win = null;
-        
+
         // Connection mode: 'socket' or 'p2p'
         this.connectionMode = null;
         this.socketAvailable = false;
-        
+
         // P2P (PeerJS/WebRTC) properties
         this.peer = null;                 // PeerJS instance
         this.peerConnections = new Map(); // peerId -> { conn, device }
@@ -97,10 +97,10 @@ class LumoDrop {
     // Encrypt data using AES-GCM
     async encryptData(data) {
         if (!this.encryptionKey) await this.generateEncryptionKey();
-        
+
         const iv = window.crypto.getRandomValues(new Uint8Array(12));
         const encodedData = new TextEncoder().encode(JSON.stringify(data));
-        
+
         const encrypted = await window.crypto.subtle.encrypt(
             { name: 'AES-GCM', iv },
             this.encryptionKey,
@@ -137,7 +137,7 @@ class LumoDrop {
     // Encrypt file chunk
     async encryptFileChunk(chunk) {
         if (!this.encryptionKey) await this.generateEncryptionKey();
-        
+
         const iv = window.crypto.getRandomValues(new Uint8Array(12));
         const encrypted = await window.crypto.subtle.encrypt(
             { name: 'AES-GCM', iv },
@@ -424,20 +424,20 @@ class LumoDrop {
         this.bindElements();
         this.bindEvents();
         this.generateEncryptionKey();
-        
+
         // Default to P2P mode immediately for better UX
         this.selectMode('p2p');
-        
+
         // Check socket availability silently in background
         this.checkSocketAvailability();
     }
 
     // Check if Socket.IO server is available
     async checkSocketAvailability() {
-        const isServerless = window.location.hostname.includes('vercel.app') || 
-                            window.location.hostname.includes('netlify.app') ||
-                            window.location.hostname.includes('github.io');
-        
+        const isServerless = window.location.hostname.includes('vercel.app') ||
+            window.location.hostname.includes('netlify.app') ||
+            window.location.hostname.includes('github.io');
+
         if (isServerless) {
             this.socketAvailable = false;
             this.elements.modeSocketBtn.disabled = true;
@@ -512,7 +512,7 @@ class LumoDrop {
         if (this.elements.saveNameBtn) {
             this.elements.saveNameBtn.addEventListener('click', () => this.saveDeviceName());
         }
-        
+
         if (this.elements.deviceNameInput) {
             this.elements.deviceNameInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
@@ -562,25 +562,25 @@ class LumoDrop {
     // Select connection mode
     selectMode(mode) {
         this.connectionMode = mode;
-        
+
         // Update UI if elements exist
         const activeClass = 'border-[#10b981] bg-[#10b981]/10';
         const inactiveClass = 'border-white/10 bg-white/5';
-        
+
         if (this.elements.modeSocketBtn && this.elements.modeP2PBtn) {
             if (mode === 'socket') {
                 this.elements.modeSocketBtn.className = this.elements.modeSocketBtn.className
                     .replace(inactiveClass, activeClass);
                 this.elements.modeP2PBtn.className = this.elements.modeP2PBtn.className
                     .replace(activeClass, inactiveClass);
-                if(this.elements.modeHint) this.elements.modeHint.textContent = 'Connect via your own server - requires Socket.IO';
+                if (this.elements.modeHint) this.elements.modeHint.textContent = 'Connect via your own server - requires Socket.IO';
                 this.connectSocket();
             } else if (mode === 'p2p') {
                 this.elements.modeP2PBtn.className = this.elements.modeP2PBtn.className
                     .replace(inactiveClass, activeClass);
                 this.elements.modeSocketBtn.className = this.elements.modeSocketBtn.className
                     .replace(activeClass, inactiveClass);
-                if(this.elements.modeHint) this.elements.modeHint.textContent = 'Direct P2P via WebRTC - works on any network!';
+                if (this.elements.modeHint) this.elements.modeHint.textContent = 'Direct P2P via WebRTC - works on any network!';
                 this.initP2PMode();
             }
         } else {
@@ -593,10 +593,10 @@ class LumoDrop {
     // Connect to Socket.IO server
     connectSocket() {
         // Check if we're on a serverless platform (Vercel, Netlify, etc.)
-        const isServerless = window.location.hostname.includes('vercel.app') || 
-                            window.location.hostname.includes('netlify.app') ||
-                            window.location.hostname.includes('github.io');
-        
+        const isServerless = window.location.hostname.includes('vercel.app') ||
+            window.location.hostname.includes('netlify.app') ||
+            window.location.hostname.includes('github.io');
+
         if (isServerless) {
             this.updateStatus('error', 'WebSocket not available');
             this.showServerlessWarning();
@@ -653,7 +653,7 @@ class LumoDrop {
     // Initialize P2P mode using PeerJS
     async initP2PMode() {
         this.updateStatus('connecting', 'Loading P2P...');
-        
+
         const loaded = await this.loadPeerJS();
         if (!loaded) {
             this.updateStatus('error', 'P2P unavailable');
@@ -685,7 +685,7 @@ class LumoDrop {
 
         // Create peer with room code as ID (host)
         const peerId = `lumoDrop-${this.p2pRoomCode}-host`;
-        
+
         try {
             this.peer = new Peer(peerId, {
                 debug: 1
@@ -735,7 +735,7 @@ class LumoDrop {
 
             this.peer.on('open', (id) => {
                 console.log('[LumoDrop] Client peer opened:', id);
-                
+
                 // Connect to host
                 const conn = this.peer.connect(hostPeerId, {
                     reliable: true,
@@ -778,10 +778,10 @@ class LumoDrop {
     setupConnection(conn, isInitiator) {
         conn.on('open', () => {
             console.log('[LumoDrop] Connection opened with:', conn.peer);
-            
+
             // Get device info from metadata or request it
-            const deviceInfo = conn.metadata?.device || { 
-                id: conn.peer, 
+            const deviceInfo = conn.metadata?.device || {
+                id: conn.peer,
                 name: 'Unknown Device',
                 platform: 'Unknown'
             };
@@ -950,7 +950,7 @@ class LumoDrop {
             this.peer.destroy();
             this.peer = null;
         }
-        
+
         this.p2pRoomCode = null;
         this.currentRoom = null;
         this.devices = [];
@@ -1025,7 +1025,7 @@ class LumoDrop {
             this.deviceName = name;
             localStorage.setItem('lumoDrop_deviceName', name);
             this.showToast('Device name saved', 'success');
-            
+
             // Re-register with new name
             if (this.isConnected) {
                 this.registerDevice();
@@ -1271,7 +1271,7 @@ class LumoDrop {
             // Socket mode
             this.socket.emit('lumoDrop:chatMessage', { content, encrypted: false });
         }
-        
+
         this.elements.chatInput.value = '';
     }
 
@@ -1284,14 +1284,14 @@ class LumoDrop {
         const isOwn = data.from.id === this.deviceId;
         const msg = document.createElement('div');
         msg.className = `flex flex-col ${isOwn ? 'items-end' : 'items-start'} mb-4 group`;
-        
+
         // Nothing OS style: Minimalist, no bubbles, just text and lines
         msg.innerHTML = `
             <div class="flex items-center gap-2 mb-1 opacity-50 group-hover:opacity-100 transition-opacity">
                 <span class="text-[10px] font-mono uppercase tracking-wider ${isOwn ? 'text-[#10b981]' : 'text-gray-400'}">
                     ${isOwn ? 'YOU' : data.from.name}
                 </span>
-                <span class="text-[9px] font-mono text-gray-600">${new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                <span class="text-[9px] font-mono text-gray-600">${new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div class="relative max-w-[85%]">
                 ${!isOwn ? '<div class="absolute top-0 left-0 w-0.5 h-full bg-white/20 -ml-3"></div>' : ''}
@@ -1434,7 +1434,7 @@ class LumoDrop {
         }, async (response) => {
             if (response.success) {
                 const transferId = response.transferId;
-                
+
                 // Store transfer info
                 this.transfers.set(transferId, {
                     file,
@@ -1536,7 +1536,7 @@ class LumoDrop {
     // Handle incoming file transfer request
     handleFileTransferRequest(data) {
         this.pendingFiles.push(data);
-        
+
         // Show modal
         this.elements.receiveFrom.textContent = `From: ${data.from.name}`;
         this.elements.receiveFilename.textContent = data.fileName;
@@ -1571,7 +1571,7 @@ class LumoDrop {
             } else {
                 this.socket.emit('lumoDrop:fileTransferAccept', { transferId });
             }
-            
+
             this.renderTransfers();
         }
 
@@ -1594,7 +1594,7 @@ class LumoDrop {
         } else if (this.socket) {
             this.socket.emit('lumoDrop:fileTransferReject', { transferId });
         }
-        
+
         this.elements.receiveModal.classList.add('hidden');
         this.pendingFiles = this.pendingFiles.filter(f => f.transferId !== transferId);
     }
@@ -1666,7 +1666,7 @@ class LumoDrop {
                 completed: 'text-[#10b981]',
                 rejected: 'text-red-500'
             };
-            
+
             const barColors = {
                 pending: 'bg-yellow-500',
                 sending: 'bg-blue-500',
@@ -1711,7 +1711,7 @@ class LumoDrop {
 
         const toast = document.createElement('div');
         toast.className = `bg-black border ${colors[type]} px-4 py-3 text-sm font-mono shadow-[0_0_20px_rgba(0,0,0,0.5)] animate-[fadeIn_0.3s_ease-out] flex items-center gap-3 min-w-[250px]`;
-        
+
         // Nothing OS style icon (simple dot or symbol)
         let icon = '';
         if (type === 'success') icon = '<div class="w-2 h-2 bg-[#10b981] rounded-full shadow-[0_0_5px_#10b981]"></div>';

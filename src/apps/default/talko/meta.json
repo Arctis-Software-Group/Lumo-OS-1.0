@@ -1,0 +1,11 @@
+{
+    "id": "talko",
+    "name": "Talko",
+    "version": "1.0.0",
+    "description": "Secure P2P Chat & File Sharing. The successor to Lumo Drop.",
+    "icon": "fa-solid fa-comment-dots",
+    "color": "#ff4444",
+    "category": "Social",
+    "script": "src/apps/default/talko/talko.js",
+    "size": "5.0 MB"
+}

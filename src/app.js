@@ -8,9 +8,10 @@ const systemApps = [
     { id: 'photos', name: 'Photos', icon: 'fa-solid fa-image', color: 'var(--accent)', type: 'app' },
     { id: 'calculator', name: 'Calc', icon: 'fa-solid fa-calculator', color: '#DB4437', type: 'app' },
     { id: 'store', name: 'Lumo Store', icon: 'fa-solid fa-bag-shopping', color: '#fff', type: 'app' },
+    { id: 'lumo-wallpaper', name: 'Wallpapers', icon: 'fa-solid fa-image', color: 'var(--accent)', type: 'app' },
 ];
 
-const DESKTOP_SHORTCUT_IDS = new Set(['browser', 'files', 'cmd', 'notes', 'settings', 'store', 'photo-pro']);
+const DESKTOP_SHORTCUT_IDS = new Set(['browser', 'files', 'cmd', 'notes', 'settings', 'store', 'photo-pro', 'lumo-wallpaper']);
 const STORAGE_KEYS = {
     notes: 'lumo_notes',
     installedApps: 'lumo_store_apps',
@@ -101,6 +102,7 @@ const storeCatalogPaths = [
     'src/apps/default/video-studio/meta.json',
     'src/apps/default/camera/meta.json',
     'src/apps/default/lumo-drop/meta.json',
+    'src/apps/default/talko/meta.json',
     'src/apps/community/drawin-simple/meta.json',
     'src/apps/community/grapher/meta.json'
 ];
@@ -108,6 +110,7 @@ let installedStoreApps = loadInstalledApps();
 let storeCatalog = [];
 let zIndexCounter = 100;
 let activeWindows = {};
+let minimizedWindows = new Set();
 let currentTheme = 'dark';
 // track boot time for uptime command
 const lumoBootTime = new Date();
@@ -161,8 +164,43 @@ window.addEventListener('load', () => {
     renderWidgets();
     loadStoreCatalog();
     loadWallpaperPreference();
+    loadAccentPreference();
     // (language dispatch already handled after locales load)
 });
+
+// --- Accent Color Logic ---
+const accentColors = [
+    { name: 'Lumo Red', value: '#ff003c' },
+    { name: 'Blue', value: '#3b82f6' },
+    { name: 'Green', value: '#22c55e' },
+    { name: 'Purple', value: '#a855f7' },
+    { name: 'Orange', value: '#f97316' },
+    { name: 'Pink', value: '#ec4899' },
+];
+
+function loadAccentPreference() {
+    const saved = localStorage.getItem('lumo_accent');
+    if (saved) {
+        document.documentElement.style.setProperty('--accent', saved);
+    }
+}
+
+function setAccentColor(color) {
+    document.documentElement.style.setProperty('--accent', color);
+    localStorage.setItem('lumo_accent', color);
+    // Update settings UI if open
+    const settingsWin = document.querySelector('[id^="win-settings"]');
+    if (settingsWin) {
+        const buttons = settingsWin.querySelectorAll('[data-accent-color]');
+        buttons.forEach(btn => {
+            if (btn.dataset.accentColor === color) {
+                btn.innerHTML = '<i class="fa-solid fa-check text-white text-xs"></i>';
+            } else {
+                btn.innerHTML = '';
+            }
+        });
+    }
+}
 
 window.logoutUser = function () {
     const desktop = document.getElementById('desktop');
@@ -272,7 +310,9 @@ function renderDesktop() {
 
     getAllApps().forEach(app => {
         dock.appendChild(createDockButton(app));
-        drawer.appendChild(createDrawerItem(app));
+        const drawerItem = createDrawerItem(app);
+        drawerItem.dataset.appName = app.name.toLowerCase();
+        drawer.appendChild(drawerItem);
         // Show if it's a default shortcut OR it's an installed store app
         if (DESKTOP_SHORTCUT_IDS.has(app.id) || installedStoreApps.some(a => a.id === app.id)) {
             const icon = createDesktopIcon(app);
@@ -294,6 +334,7 @@ function renderDesktop() {
             desktopIcons.appendChild(icon);
         }
     });
+    updateDockIndicators();
 }
 
 function renderAppIcon(app, extraClasses = '') {
@@ -308,12 +349,13 @@ function renderAppIcon(app, extraClasses = '') {
 function createDockButton(app) {
     const btn = document.createElement('button');
     btn.className = 'app-icon w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition hover:-translate-y-2 relative group';
+    btn.dataset.appId = app.id;
     btn.innerHTML = `
         ${renderAppIcon(app, 'text-xl sm:text-2xl')}
-        <div class="absolute -bottom-2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="dock-dot absolute -bottom-2 w-1 h-1 bg-white rounded-full opacity-0 transition-opacity"></div>
         <div class="absolute -top-10 bg-black/80 text-xs px-2 py-1 rounded text-white opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap font-dot border border-white/20">${app.name}</div>
     `;
-    btn.onclick = () => openApp(app);
+    btn.onclick = () => toggleApp(app.id);
     return btn;
 }
 
@@ -387,12 +429,111 @@ function createDesktopIcon(app) {
     return item;
 }
 
+function minimizeApp(id) {
+    const win = activeWindows[id];
+    if (win) {
+        win.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        win.style.transform = 'scale(0.5) translateY(100px)';
+        win.style.opacity = '0';
+        setTimeout(() => {
+            win.classList.add('hidden');
+            // Reset styles so it restores cleanly
+            win.style.transform = '';
+            win.style.opacity = '';
+            win.style.transition = '';
+        }, 300);
+        minimizedWindows.add(id);
+        updateDockIndicators();
+    }
+}
+
+function restoreApp(id) {
+    const win = activeWindows[id];
+    if (win) {
+        win.classList.remove('hidden');
+        minimizedWindows.delete(id);
+        bringToFront(id);
+        
+        // Animation
+        win.style.transform = 'scale(0.9)';
+        win.style.opacity = '0';
+        requestAnimationFrame(() => {
+             win.style.transition = 'all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)';
+             win.style.transform = 'scale(1)';
+             win.style.opacity = '1';
+             setTimeout(() => { win.style.transition = ''; }, 300);
+        });
+        
+        updateDockIndicators();
+    }
+}
+
+function toggleApp(id) {
+    if (minimizedWindows.has(id)) {
+        restoreApp(id);
+    } else if (activeWindows[id]) {
+        const win = activeWindows[id];
+        const isTop = parseInt(win.style.zIndex) === zIndexCounter;
+        if (isTop) {
+            minimizeApp(id);
+        } else {
+            bringToFront(id);
+        }
+    } else {
+        const app = getAllApps().find(a => a.id === id);
+        if (app) openApp(app);
+    }
+}
+
+function minimizeAll() {
+    Object.keys(activeWindows).forEach(id => {
+        if (!minimizedWindows.has(id)) minimizeApp(id);
+    });
+}
+
+function updateDockIndicators() {
+    const dock = document.getElementById('dock-apps');
+    if (!dock) return;
+    
+    Array.from(dock.children).forEach(btn => {
+        const appId = btn.dataset.appId;
+        if (!appId) return;
+        
+        const dot = btn.querySelector('.dock-dot');
+        if (dot) {
+             if (activeWindows[appId]) {
+                 dot.classList.remove('opacity-0');
+                 dot.classList.add('opacity-100');
+                 if (minimizedWindows.has(appId)) {
+                     dot.classList.add('bg-gray-400');
+                     dot.classList.remove('bg-white');
+                 } else {
+                     dot.classList.remove('bg-gray-400');
+                     dot.classList.add('bg-white');
+                 }
+             } else {
+                 dot.classList.remove('opacity-100');
+                 dot.classList.add('opacity-0');
+             }
+        }
+    });
+}
+
 function getAllApps() {
     return [...systemApps, ...installedStoreApps];
 }
 
-function openApp(app) {
-    if (activeWindows[app.id]) { bringToFront(app.id); return; }
+async function openApp(app) {
+    if (activeWindows[app.id]) {
+        if (minimizedWindows.has(app.id)) {
+            restoreApp(app.id);
+        } else {
+            bringToFront(app.id);
+        }
+        return;
+    }
+
+    await loadAppScript(app.id);
 
     const winId = app.id;
     const isMobile = window.innerWidth < 768;
@@ -448,6 +589,8 @@ function openApp(app) {
         contentHTML = window.Lumora?.buildMarkup ? window.Lumora.buildMarkup() : buildFallbackMarkup(app);
     } else if (app.id === 'lumo-drop') {
         contentHTML = window.LumoDrop?.buildMarkup ? window.LumoDrop.buildMarkup() : buildFallbackMarkup(app);
+    } else if (app.id === 'talko') {
+        contentHTML = window.TalkoApp?.buildMarkup ? window.TalkoApp.buildMarkup() : buildFallbackMarkup(app);
     } else {
         contentHTML = buildFallbackMarkup(app);
     }
@@ -457,8 +600,8 @@ function openApp(app) {
             <div class="flex items-center gap-2">
                 <div class="flex gap-1.5 window-controls">
                     <button onclick="closeApp('${winId}')" class="w-3 h-3 rounded-full bg-[#ff5f56] hover:bg-[#cc4b42] transition"></button>
-                    <button class="w-3 h-3 rounded-full bg-[#ffbd2e] hover:bg-[#d69d23] transition"></button>
-                    <button class="w-3 h-3 rounded-full bg-[#27c93f] hover:bg-[#1e9e31] transition"></button>
+                    <button onclick="minimizeApp('${winId}')" class="w-3 h-3 rounded-full bg-[#ffbd2e] hover:bg-[#d69d23] transition"></button>
+                    <button onclick="toggleMaximize('${winId}')" class="w-3 h-3 rounded-full bg-[#27c93f] hover:bg-[#1e9e31] transition"></button>
                 </div>
                  <button onclick="closeApp('${winId}')" class="mobile-close-btn hidden text-red-500 font-bold text-lg ml-[-10px]"><i class="fa-solid fa-chevron-left"></i> Back</button>
             </div>
@@ -470,6 +613,7 @@ function openApp(app) {
 
     document.getElementById('window-area').appendChild(win);
     activeWindows[winId] = win;
+    updateDockIndicators();
     if (app.id === 'cmd') initCommandPrompt(winId);
     if (app.id === 'notes') initNotes();
     if (app.id === 'settings') initSettings(winId);
@@ -489,6 +633,7 @@ function openApp(app) {
     if (app.id === 'grapher' && window.Grapher?.init) window.Grapher.init(win);
     if (app.id === 'lumora' && window.Lumora?.init) window.Lumora.init(win);
     if (app.id === 'lumo-drop' && window.LumoDrop?.init) window.LumoDrop.init(win);
+    if (app.id === 'talko' && window.TalkoApp?.init) window.TalkoApp.init(win);
 
     bringToFront(winId);
 }
@@ -497,8 +642,42 @@ function closeApp(id) {
     const win = document.getElementById(`win-${id}`);
     if (win) {
         win.classList.add('opacity-0', 'scale-90');
-        setTimeout(() => { win.remove(); delete activeWindows[id]; }, 200);
+        setTimeout(() => {
+            win.remove();
+            delete activeWindows[id];
+            minimizedWindows.delete(id);
+            updateDockIndicators();
+        }, 200);
     }
+}
+
+function toggleMaximize(id) {
+    const win = document.getElementById(`win-${id}`);
+    if (!win) return;
+
+    if (win.dataset.maximized === 'true') {
+        // Restore
+        win.style.top = win.dataset.prevTop || '50px';
+        win.style.left = win.dataset.prevLeft || '50px';
+        win.style.width = win.dataset.prevWidth || '600px';
+        win.style.height = win.dataset.prevHeight || '400px';
+        win.classList.add('rounded-xl');
+        win.dataset.maximized = 'false';
+    } else {
+        // Maximize
+        win.dataset.prevTop = win.style.top;
+        win.dataset.prevLeft = win.style.left;
+        win.dataset.prevWidth = win.style.width;
+        win.dataset.prevHeight = win.style.height;
+
+        win.style.top = '32px'; // Status bar height
+        win.style.left = '0px';
+        win.style.width = '100%';
+        win.style.height = 'calc(100% - 130px)'; // Reserve space for dock (approx 90px + padding)
+        win.classList.remove('rounded-xl');
+        win.dataset.maximized = 'true';
+    }
+    bringToFront(id);
 }
 
 function bringToFront(id) { if (activeWindows[id]) { zIndexCounter++; activeWindows[id].style.zIndex = zIndexCounter; } }
@@ -776,6 +955,14 @@ function initSettings(id) {
         applyTheme(currentTheme);
     }
 
+    // Accent Color Logic
+    const accentButtons = win.querySelectorAll('[data-accent-color]');
+    accentButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            setAccentColor(btn.dataset.accentColor);
+        });
+    });
+
     const languageButtons = win.querySelectorAll('[data-language-choice]');
     const selectedLanguage = localStorage.getItem(STORAGE_KEYS.language) || 'en';
     const highlightLanguage = (lang) => {
@@ -943,6 +1130,31 @@ function buildSettingsMarkup() {
                 </div>
                 <p class="text-xs text-gray-400">Switch between night and day modes instantly.</p>
             </section>
+
+            <section class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.4em] text-gray-400">Style</p>
+                        <p class="text-2xl font-dot">Accent Color</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 flex-wrap">
+                    ${accentColors.map(c => `
+                        <button data-accent-color="${c.value}" class="w-8 h-8 rounded-full flex items-center justify-center transition hover:scale-110" style="background-color: ${c.value}; box-shadow: 0 0 10px ${c.value}40;">
+                             ${(localStorage.getItem('lumo_accent') === c.value || (!localStorage.getItem('lumo_accent') && c.value === '#ff003c')) ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="h-[1px] bg-white/10 my-2"></div>
+                <div class="flex items-center justify-between">
+                     <div>
+                        <p class="text-lg font-dot">Wallpaper</p>
+                        <p class="text-xs text-gray-400">Change your desktop background.</p>
+                     </div>
+                     <button onclick="openApp({ id: 'lumo-wallpaper', name: 'Wallpapers', icon: 'fa-solid fa-image', color: 'var(--accent)' })" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-sm transition border border-white/10">Open Gallery</button>
+                </div>
+            </section>
+
             <section class="rounded-3xl border border-white/10 bg-white/5 p-4 flex flex-col gap-4">
                 <div class="flex items-center justify-between">
                     <div>
@@ -1075,14 +1287,14 @@ function buildStoreMarkup() {
     return `
         <div class="flex-1 flex flex-col overflow-hidden bg-[var(--bg-dark)] text-[var(--text-main)]">
             <!-- Hero Section -->
-            <div class="relative h-48 shrink-0 overflow-hidden">
+            <div class="relative h-32 md:h-48 shrink-0 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-b from-[var(--accent)] to-transparent opacity-20"></div>
                 <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
-                <div class="absolute bottom-0 left-0 p-6">
-                    <p class="text-xs uppercase tracking-[0.4em] text-[var(--accent)] font-bold mb-2">Featured</p>
-                    <h2 class="font-dot text-4xl mb-1">Lumo Store</h2>
-                    <p class="text-sm opacity-70">Discover apps built for the future.</p>
-                    <div class="mt-2 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 w-fit">
+                <div class="absolute bottom-0 left-0 p-4 md:p-6">
+                    <p class="text-[10px] md:text-xs uppercase tracking-[0.4em] text-[var(--accent)] font-bold mb-1 md:mb-2">Featured</p>
+                    <h2 class="font-dot text-2xl md:text-4xl mb-1">Lumo Store</h2>
+                    <p class="text-xs md:text-sm opacity-70">Discover apps built for the future.</p>
+                    <div class="mt-2 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 w-fit hidden md:flex">
                         <i class="fa-solid fa-sparkles text-[#8b5cf6] text-xs"></i>
                         <span class="text-[10px] font-mono text-gray-300">AI Generation powered by <span class="text-white font-bold">Lumora 1.0</span></span>
                     </div>
@@ -1090,15 +1302,15 @@ function buildStoreMarkup() {
             </div>
 
             <!-- Tabs / Filter -->
-            <div class="flex items-center gap-4 px-6 py-3 border-b border-[var(--window-border)] overflow-x-auto no-scrollbar">
-                <button class="px-4 py-1.5 rounded-full bg-[var(--accent)] text-white text-xs font-bold tracking-wider uppercase whitespace-nowrap">All Apps</button>
-                <button class="px-4 py-1.5 rounded-full border border-[var(--window-border)] hover:bg-[var(--card-bg)] text-[var(--text-muted)] text-xs font-bold tracking-wider uppercase whitespace-nowrap transition">Productivity</button>
-                <button class="px-4 py-1.5 rounded-full border border-[var(--window-border)] hover:bg-[var(--card-bg)] text-[var(--text-muted)] text-xs font-bold tracking-wider uppercase whitespace-nowrap transition">Creative</button>
-                <button class="px-4 py-1.5 rounded-full border border-[var(--window-border)] hover:bg-[var(--card-bg)] text-[var(--text-muted)] text-xs font-bold tracking-wider uppercase whitespace-nowrap transition">System</button>
+            <div class="flex items-center gap-2 md:gap-4 px-4 md:px-6 py-2 border-b border-[var(--window-border)] overflow-x-auto no-scrollbar">
+                <button class="px-3 md:px-4 py-1 md:py-1.5 rounded-full bg-[var(--accent)] text-white text-[10px] md:text-xs font-bold tracking-wider uppercase whitespace-nowrap">All Apps</button>
+                <button class="px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-[var(--window-border)] hover:bg-[var(--card-bg)] text-[var(--text-muted)] text-[10px] md:text-xs font-bold tracking-wider uppercase whitespace-nowrap transition">Productivity</button>
+                <button class="px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-[var(--window-border)] hover:bg-[var(--card-bg)] text-[var(--text-muted)] text-[10px] md:text-xs font-bold tracking-wider uppercase whitespace-nowrap transition">Creative</button>
+                <button class="px-3 md:px-4 py-1 md:py-1.5 rounded-full border border-[var(--window-border)] hover:bg-[var(--card-bg)] text-[var(--text-muted)] text-[10px] md:text-xs font-bold tracking-wider uppercase whitespace-nowrap transition">System</button>
             </div>
 
             <!-- Grid -->
-            <div id="store-apps-grid" class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="store-apps-grid" class="flex-1 overflow-y-auto p-4 md:p-6 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 md:gap-4">
                 <!-- Apps injected here -->
             </div>
         </div>
@@ -1112,6 +1324,31 @@ function buildFallbackMarkup(app) {
             <h2 class="font-dot text-2xl">Not Implemented</h2>
         </div>
     `;
+}
+
+const loadedScripts = new Set();
+
+function loadAppScript(appId) {
+    if (loadedScripts.has(appId)) return Promise.resolve();
+
+    const metaPath = storeCatalogPaths.find(p => p.includes(`/${appId}/`));
+    if (!metaPath) return Promise.resolve(); // Not a catalog app, maybe system app
+
+    const scriptPath = metaPath.replace('meta.json', `${appId}.js`);
+    
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = scriptPath;
+        script.onload = () => {
+            loadedScripts.add(appId);
+            resolve();
+        };
+        script.onerror = () => {
+            console.warn(`Failed to load script for ${appId}`);
+            resolve(); // Resolve anyway to allow fallback
+        };
+        document.body.appendChild(script);
+    });
 }
 
 function loadStoreCatalog() {
@@ -1148,34 +1385,34 @@ function mountStoreApp(win) {
     storeCatalog.forEach(appMeta => {
         const card = document.createElement('div');
         const isInstalled = installedStoreApps.some(app => app.id === appMeta.id);
-        card.className = 'group relative flex flex-col gap-3 p-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-[var(--accent)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl';
+        card.className = 'group relative flex flex-col gap-2 p-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-[var(--accent)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl';
 
         // Card Content
         card.innerHTML = `
-            <div class="flex items-start justify-between mb-2">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-[var(--bg-dark)] border border-[var(--window-border)] shadow-sm group-hover:scale-110 transition-transform duration-300">
+            <div class="flex items-start justify-between mb-1">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-[var(--bg-dark)] border border-[var(--window-border)] shadow-sm group-hover:scale-110 transition-transform duration-300">
                     ${renderAppIcon(appMeta)}
                 </div>
-                ${isInstalled ? '<span class="text-[10px] font-bold bg-green-500/10 text-green-500 px-2 py-1 rounded uppercase tracking-wider">Installed</span>' : ''}
+                ${isInstalled ? '<span class="text-[9px] font-bold bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded uppercase tracking-wider">Installed</span>' : ''}
             </div>
             
             <div>
-                <div class="flex items-center gap-1 mb-1">
-                    <span class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider">${appMeta.creator || 'Lumo Team'}</span>
-                    ${appMeta.verified ? '<i class="fa-solid fa-circle-check text-blue-400 text-[10px]"></i>' : ''}
+                <div class="flex items-center gap-1 mb-0.5">
+                    <span class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-wider">${appMeta.creator || 'Lumo Team'}</span>
+                    ${appMeta.verified ? '<i class="fa-solid fa-circle-check text-blue-400 text-[9px]"></i>' : ''}
                 </div>
-                <h3 class="font-dot text-xl font-bold text-[var(--text-main)] leading-none mb-1">${appMeta.name}</h3>
-                <p class="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-2">${appMeta.category || 'Application'}</p>
-                <p class="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed">${appMeta.description}</p>
+                <h3 class="font-dot text-lg font-bold text-[var(--text-main)] leading-none mb-1">${appMeta.name}</h3>
+                <p class="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-1.5">${appMeta.category || 'Application'}</p>
+                <p class="text-[11px] text-[var(--text-muted)] line-clamp-2 leading-relaxed">${appMeta.description}</p>
             </div>
 
-            <div class="mt-auto pt-3 flex items-center gap-2">
-                ${(appMeta.features || []).slice(0, 2).map(f => `<span class="text-[10px] px-2 py-0.5 rounded border border-[var(--window-border)] text-[var(--text-muted)] bg-[var(--bg-dark)]">${f}</span>`).join('')}
+            <div class="mt-auto pt-2 flex items-center gap-1.5 flex-wrap">
+                ${(appMeta.features || []).slice(0, 2).map(f => `<span class="text-[9px] px-1.5 py-0.5 rounded border border-[var(--window-border)] text-[var(--text-muted)] bg-[var(--bg-dark)]">${f}</span>`).join('')}
             </div>
         `;
 
         const actions = document.createElement('div');
-        actions.className = 'mt-4 grid grid-cols-2 gap-2';
+        actions.className = 'mt-3 grid grid-cols-2 gap-2';
 
         // Primary action (install or installed status)
         const actionPrimary = document.createElement('button');
@@ -1495,7 +1732,37 @@ function hexToRgba(hex, alpha) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function toggleAppDrawer() { const drawer = document.getElementById('app-drawer'); const isHidden = drawer.classList.contains('hidden'); if (isHidden) { drawer.classList.remove('hidden'); drawer.classList.add('flex'); } else { drawer.classList.add('hidden'); drawer.classList.remove('flex'); } document.getElementById('control-center').classList.add('hidden'); }
+function toggleAppDrawer() { 
+    const drawer = document.getElementById('app-drawer'); 
+    const isHidden = drawer.classList.contains('hidden'); 
+    if (isHidden) { 
+        drawer.classList.remove('hidden'); 
+        drawer.classList.add('flex'); 
+        const input = document.getElementById('drawer-search');
+        if (input) {
+            input.value = '';
+            input.focus();
+            // Filter Logic
+            input.oninput = (e) => {
+                const term = e.target.value.toLowerCase();
+                const grid = document.getElementById('drawer-grid');
+                Array.from(grid.children).forEach(item => {
+                    const name = item.dataset.appName;
+                    if (name && name.includes(term)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            };
+            input.dispatchEvent(new Event('input'));
+        }
+    } else { 
+        drawer.classList.add('hidden'); 
+        drawer.classList.remove('flex'); 
+    } 
+    document.getElementById('control-center').classList.add('hidden'); 
+}
 
 function toggleControlCenter() { const cc = document.getElementById('control-center'); const isHidden = cc.classList.contains('hidden'); if (isHidden) { cc.classList.remove('hidden'); setTimeout(() => { cc.classList.remove('opacity-0', 'scale-90'); cc.classList.add('opacity-100', 'scale-100'); }, 10); } else { cc.classList.remove('opacity-100', 'scale-100'); cc.classList.add('opacity-0', 'scale-90'); setTimeout(() => cc.classList.add('hidden'), 300); } document.getElementById('app-drawer').classList.add('hidden'); }
 
@@ -1503,37 +1770,94 @@ function toggleState(element) { const circle = element.querySelector('.rounded-f
 
 let isDragging = false; let currentWin = null; let offset = { x: 0, y: 0 };
 function startDrag(e, id) { if (window.innerWidth < 768) return; isDragging = true; currentWin = document.getElementById(`win-${id}`); bringToFront(id); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; offset.x = clientX - currentWin.offsetLeft; offset.y = clientY - currentWin.offsetTop; }
-window.addEventListener('mousemove', (e) => { if (!isDragging || !currentWin) return; e.preventDefault(); currentWin.style.left = `${e.clientX - offset.x}px`; currentWin.style.top = `${e.clientY - offset.y}px`; });
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging || !currentWin) return;
+    e.preventDefault();
+    currentWin.style.left = `${e.clientX - offset.x}px`;
+    currentWin.style.top = `${e.clientY - offset.y}px`;
+
+    // Snap Ghost Logic
+    const snapThreshold = 50;
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+
+    snapGhost.classList.add('hidden');
+    snapGhost.style.width = '';
+    snapGhost.style.height = '';
+    snapGhost.style.left = '';
+    snapGhost.style.top = '';
+
+    if (mouseX < snapThreshold) {
+        // Left Snap
+        snapGhost.classList.remove('hidden');
+        snapGhost.style.left = '0px';
+        snapGhost.style.top = '32px';
+        snapGhost.style.height = 'calc(100% - 130px)';
+        snapGhost.style.width = '50%';
+    } else if (window.innerWidth - mouseX < snapThreshold) {
+        // Right Snap
+        snapGhost.classList.remove('hidden');
+        snapGhost.style.left = '50%';
+        snapGhost.style.top = '32px';
+        snapGhost.style.height = 'calc(100% - 130px)';
+        snapGhost.style.width = '50%';
+    } else if (mouseY < snapThreshold) {
+        // Top Snap (Maximize)
+        snapGhost.classList.remove('hidden');
+        snapGhost.style.left = '0px';
+        snapGhost.style.top = '32px';
+        snapGhost.style.width = '100%';
+        snapGhost.style.height = 'calc(100% - 130px)';
+    }
+});
 window.addEventListener('touchmove', (e) => { if (!isDragging || !currentWin) return; const touch = e.touches[0]; currentWin.style.left = `${touch.clientX - offset.x}px`; currentWin.style.top = `${touch.clientY - offset.y}px`; }, { passive: false });
 window.addEventListener('mouseup', () => {
     if (isDragging && currentWin) {
         // Window Snapping Logic
         const snapThreshold = 50;
         const rect = currentWin.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // Use mouse position based logic from ghost if available, but here we use rect for robustness or fallback
+        // Actually, let's match the ghost logic which relies on cursor position.
+        // Since mouseup event has clientX, we can use it.
+        // But the event object is not passed to this arrow function in the original code?
+        // Wait, `window.addEventListener('mouseup', () => {` doesn't take `e`.
+        // I should change it to `(e)`.
 
         // Snap to Left
         if (rect.left < snapThreshold) {
             currentWin.style.left = '0px';
-            currentWin.style.top = '0px';
-            currentWin.style.height = '100%';
+            currentWin.style.top = '32px';
+            currentWin.style.height = 'calc(100% - 130px)';
             currentWin.style.width = '50%';
             currentWin.classList.remove('rounded-xl');
         }
         // Snap to Right
         else if (window.innerWidth - rect.right < snapThreshold) {
             currentWin.style.left = '50%';
-            currentWin.style.top = '0px';
-            currentWin.style.height = '100%';
+            currentWin.style.top = '32px';
+            currentWin.style.height = 'calc(100% - 130px)';
             currentWin.style.width = '50%';
             currentWin.classList.remove('rounded-xl');
         }
         // Snap to Top (Maximize)
         else if (rect.top < snapThreshold) {
+            // Save previous state if not already maximized
+            if (currentWin.dataset.maximized !== 'true') {
+                currentWin.dataset.prevTop = currentWin.style.top;
+                currentWin.dataset.prevLeft = currentWin.style.left;
+                currentWin.dataset.prevWidth = currentWin.style.width;
+                currentWin.dataset.prevHeight = currentWin.style.height;
+            }
+
+            currentWin.style.top = '32px';
             currentWin.style.left = '0px';
-            currentWin.style.top = '0px';
-            currentWin.style.height = '100%';
             currentWin.style.width = '100%';
+            currentWin.style.height = 'calc(100% - 130px)';
             currentWin.classList.remove('rounded-xl');
+            currentWin.dataset.maximized = 'true';
         }
         // Restore rounded corners if not snapped (basic check)
         else {
@@ -1542,6 +1866,7 @@ window.addEventListener('mouseup', () => {
     }
     isDragging = false;
     currentWin = null;
+    snapGhost.classList.add('hidden');
 });
 window.addEventListener('touchend', () => { isDragging = false; currentWin = null; });
 
@@ -1550,6 +1875,58 @@ window.addEventListener('touchend', () => { isDragging = false; currentWin = nul
 document.addEventListener('keydown', (e) => { if (e.altKey && e.code === 'Space') { const spot = document.getElementById('spotlight'); if (spot.classList.contains('hidden')) { spot.classList.remove('hidden'); spot.classList.add('flex'); document.getElementById('spotlight-input').focus(); } else { spot.classList.add('hidden'); spot.classList.remove('flex'); } } });
 
 document.getElementById('desktop').addEventListener('click', (e) => { const spot = document.getElementById('spotlight'); if (!spot.contains(e.target) && !e.altKey && !spot.classList.contains('hidden')) { spot.classList.add('hidden'); spot.classList.remove('flex'); } });
+
+// --- Context Menu ---
+const contextMenu = document.createElement('div');
+contextMenu.className = 'fixed bg-[#1a1a1a]/90 backdrop-blur-md border border-white/10 rounded-lg py-1 z-[10000] hidden w-48 shadow-2xl';
+contextMenu.innerHTML = `
+    <button data-action="refresh" class="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-white/10 flex items-center gap-2">
+        <i class="fa-solid fa-rotate-right text-gray-400 w-4"></i> Refresh
+    </button>
+    <div class="h-[1px] bg-white/10 my-1"></div>
+    <button data-action="wallpaper" class="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-white/10 flex items-center gap-2">
+        <i class="fa-solid fa-image text-gray-400 w-4"></i> Change Wallpaper
+    </button>
+    <button data-action="settings" class="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-white/10 flex items-center gap-2">
+        <i class="fa-solid fa-gear text-gray-400 w-4"></i> Settings
+    </button>
+    <div class="h-[1px] bg-white/10 my-1"></div>
+    <button data-action="new-folder" class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-white/10 flex items-center gap-2 cursor-not-allowed">
+        <i class="fa-solid fa-folder-plus text-gray-400 w-4"></i> New Folder
+    </button>
+`;
+document.body.appendChild(contextMenu);
+
+document.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('#desktop') || e.target.closest('#desktop-icons')) {
+        e.preventDefault();
+        contextMenu.style.left = `${e.clientX}px`;
+        contextMenu.style.top = `${e.clientY}px`;
+        contextMenu.classList.remove('hidden');
+    } else {
+        contextMenu.classList.add('hidden');
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (!contextMenu.contains(e.target)) {
+        contextMenu.classList.add('hidden');
+    }
+});
+
+contextMenu.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        contextMenu.classList.add('hidden');
+        if (action === 'refresh') {
+            renderDesktop();
+        } else if (action === 'wallpaper') {
+            openApp({ id: 'lumo-wallpaper', name: 'Wallpapers', icon: 'fa-solid fa-image', color: 'var(--accent)' });
+        } else if (action === 'settings') {
+            openApp(systemApps.find(a => a.id === 'settings'));
+        }
+    });
+});
 
 function clearUserData() {
     localStorage.clear();
@@ -1583,6 +1960,10 @@ let selectionStart = null;
 const selectionBox = document.createElement('div');
 selectionBox.className = 'selection-box';
 document.body.appendChild(selectionBox);
+
+const snapGhost = document.createElement('div');
+snapGhost.className = 'fixed bg-white/20 border-2 border-dashed border-white/50 rounded-xl pointer-events-none z-[9999] transition-all duration-200 hidden';
+document.body.appendChild(snapGhost);
 
 document.getElementById('desktop').addEventListener('mousedown', (e) => {
     // Only trigger if clicking directly on desktop or icons container (not on a window or app)

@@ -1,11 +1,11 @@
 {
     "id": "lumo-drop",
-    "name": "LumoDrop",
+    "name": "LumoDrop (Deprecated)",
     "icon": "fa-solid fa-share-nodes",
-    "color": "#10b981",
+    "color": "#555555",
     "category": "Connectivity",
-    "tagline": "Share anything, instantly.",
-    "description": "Securely share files and chat with devices on your network. End-to-end encrypted file transfers with real-time messaging.",
+    "tagline": "Deprecated - Use Talko instead.",
+    "description": "⚠️ DEPRECATED: LumoDrop is no longer supported. Please use Talko for advanced P2P chat and file sharing. Talko includes all LumoDrop features plus Calls, Folders, and more.",
     "features": [
         "E2E Encryption",
         "Real-time Chat",
