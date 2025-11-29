@@ -8,6 +8,18 @@
     {
       "src": "src/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "assets/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -16,8 +28,12 @@
       "dest": "/server.js"
     },
     {
+      "src": "/socket.io/(.*)",
+      "dest": "/server.js"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/src/$1"
+      "dest": "/$1"
     }
   ]
 }
