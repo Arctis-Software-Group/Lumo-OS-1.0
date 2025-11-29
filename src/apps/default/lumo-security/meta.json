@@ -1,0 +1,12 @@
+{
+    "id": "lumo-security",
+    "name": "Lumo Security Alpha",
+    "version": "1.0.0",
+    "icon": "fa-solid fa-shield-halved",
+    "color": "#000000",
+    "category": "System",
+    "description": "Advanced security suite for Lumo OS. Features Code Integrity scanning and Home Security monitoring.",
+    "creator": "Lumo Corp",
+    "features": ["Code Integrity", "App Lock", "Home Monitor"],
+    "comingSoon": false
+}

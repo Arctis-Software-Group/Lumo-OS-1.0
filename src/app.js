@@ -181,6 +181,7 @@ const storeCatalogPaths = [
     'src/apps/default/camera/meta.json',
     'src/apps/default/lumo-drop/meta.json',
     'src/apps/default/talko/meta.json',
+    'src/apps/default/lumo-security/meta.json',
     'src/apps/community/drawin-simple/meta.json',
     'src/apps/community/grapher/meta.json'
 ];
@@ -622,6 +623,23 @@ function getAllApps() {
 }
 
 async function openApp(app) {
+    // Security Check (App Lock)
+    const lockedApps = JSON.parse(localStorage.getItem('lumo_security_locked_apps') || '[]');
+    if (lockedApps.includes(app.id)) {
+        const sessionUnlocked = sessionStorage.getItem(`lumo_unlocked_${app.id}`);
+        if (!sessionUnlocked) {
+            const passcode = localStorage.getItem('lumo_security_passcode');
+            if (passcode) {
+                const input = prompt(`Enter passcode for ${app.name}:`);
+                if (input !== passcode) {
+                    alert('Access Denied');
+                    return;
+                }
+                sessionStorage.setItem(`lumo_unlocked_${app.id}`, 'true');
+            }
+        }
+    }
+
     if (activeWindows[app.id]) {
         if (minimizedWindows.has(app.id)) {
             restoreApp(app.id);
@@ -732,6 +750,8 @@ async function openApp(app) {
         contentHTML = window.LumoDrop?.buildMarkup ? window.LumoDrop.buildMarkup() : buildFallbackMarkup(app);
     } else if (app.id === 'talko') {
         contentHTML = window.TalkoApp?.buildMarkup ? window.TalkoApp.buildMarkup() : buildFallbackMarkup(app);
+    } else if (app.id === 'lumo-security') {
+        contentHTML = window.LumoSecurityApp?.buildMarkup ? window.LumoSecurityApp.buildMarkup() : buildFallbackMarkup(app);
     } else {
         contentHTML = buildFallbackMarkup(app);
     }
@@ -775,6 +795,7 @@ async function openApp(app) {
     if (app.id === 'lumora' && window.Lumora?.init) window.Lumora.init(win);
     if (app.id === 'lumo-drop' && window.LumoDrop?.init) window.LumoDrop.init(win);
     if (app.id === 'talko' && window.TalkoApp?.init) window.TalkoApp.init(win);
+    if (app.id === 'lumo-security') window.LumoSecurityApp.switchTab('scanner'); // Re-init state if needed
 
     bringToFront(winId);
 }
