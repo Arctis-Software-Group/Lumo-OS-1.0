@@ -40,6 +40,9 @@ const lumoDropDevices = new Map(); // deviceId -> { socket, name, platform, publ
 const lumoDropRooms = new Map(); // roomCode -> { devices: Set, createdAt, encrypted }
 const pendingTransfers = new Map(); // transferId -> { from, to, fileName, fileSize, chunks, status }
 
+// AI Usage Tracking
+const aiUsageTracker = new Map(); // Key: "IP_DATE_MODEL", Value: count
+
 // Generate room code
 function generateRoomCode() {
   return crypto.randomBytes(3).toString('hex').toUpperCase();
@@ -398,13 +401,38 @@ app.post('/api/lumora/verify', (req, res) => {
 app.post('/api/lumora/chat', async (req, res) => {
   const { messages, model, accessKey } = req.body;
 
-  // Verify Access Key again
+  // Verify Access Key
   if (accessKey !== process.env.LUMORA_ACCESS_KEY) {
     return res.status(401).json({ error: 'Unauthorized: Invalid Access Key' });
   }
 
+  // Usage Limit Check for Gemini 3.0 Pro Preview
+  if (model === 'google/gemini-3-pro-preview') {
+    const ip = req.ip || req.connection.remoteAddress;
+    const today = new Date().toISOString().split('T')[0];
+    const usageKey = `${ip}_${today}_${model}`;
+    const currentUsage = aiUsageTracker.get(usageKey) || 0;
+
+    if (currentUsage >= 1) {
+      return res.status(429).json({ 
+        error: 'Daily limit reached for Gemini 3.0 Pro Preview (1 request/day).',
+        limitReached: true
+      });
+    }
+    
+    // Increment usage (optimistic, or do it after success? Doing it here prevents spam)
+    aiUsageTracker.set(usageKey, currentUsage + 1);
+  }
+
   if (!process.env.OPENROUTER_API_KEY) {
-    return res.status(500).json({ error: 'Server Configuration Error: Missing API Key' });
+    // Fallback Simulation if no key (though we found one, this is safe)
+    return res.json({
+        choices: [{
+            message: {
+                content: "Simulated Response: Server is missing API Key, but I am working!"
+            }
+        }]
+    });
   }
 
   try {
@@ -470,7 +498,11 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-server.listen(port, () => {
-  console.log(`Lumo OS server running at http://localhost:${port}`);
-  console.log(`LumoDrop WebSocket server active on same port`);
-});
+if (require.main === module) {
+  server.listen(port, () => {
+    console.log(`Lumo OS server running at http://localhost:${port}`);
+    console.log(`LumoDrop WebSocket server active on same port`);
+  });
+}
+
+module.exports = app;

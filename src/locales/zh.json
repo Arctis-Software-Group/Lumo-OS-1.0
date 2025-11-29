@@ -72,5 +72,11 @@
     "alertWrongAnswer": "答案错误。",
     "promptRecoverUser": "输入你的用户名以找回密码:",
     "promptSecQ": "安全问题: "
+  },
+  "settings": {
+    "themePresets": "主题预设",
+    "detailStyle": "细节样式",
+    "layout": "布局",
+    "iconPack": "图标包"
   }
 }

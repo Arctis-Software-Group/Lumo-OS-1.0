@@ -72,5 +72,11 @@
     "alertWrongAnswer": "不正解です。",
     "promptRecoverUser": "パスワードを復旧するユーザー名を入力してください:",
     "promptSecQ": "秘密の質問: "
+  },
+  "settings": {
+    "themePresets": "テーマプリセット",
+    "detailStyle": "詳細スタイル",
+    "layout": "レイアウト",
+    "iconPack": "アイコンパック"
   }
 }

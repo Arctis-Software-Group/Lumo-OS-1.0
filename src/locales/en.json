@@ -72,5 +72,11 @@
     "alertWrongAnswer": "Incorrect answer.",
     "promptRecoverUser": "Enter your username to recover password:",
     "promptSecQ": "Security Question: "
+  },
+  "settings": {
+    "themePresets": "Theme Presets",
+    "detailStyle": "Detail Style",
+    "layout": "Layout",
+    "iconPack": "Icon Pack"
   }
 }

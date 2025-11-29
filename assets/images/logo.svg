@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Define a reusable dot for consistency -->
+    <circle id="dot" r="6" fill="#FFFFFF"/>
+    <circle id="red-dot" r="6" fill="#D71921"/>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" fill="#000000"/>
+  
+  <!-- === SYMBOL (The Glyph Eye) === -->
+  <g transform="translate(256, 180)">
+    <!-- Outer Ring (Left Bracket) -->
+    <use href="#dot" x="-60" y="-60"/>
+    <use href="#dot" x="-80" y="-40"/>
+    <use href="#dot" x="-90" y="-15"/>
+    <use href="#dot" x="-90" y="15"/>
+    <use href="#dot" x="-80" y="40"/>
+    <use href="#dot" x="-60" y="60"/>
+    
+    <!-- Outer Ring (Right Bracket) -->
+    <use href="#dot" x="60" y="-60"/>
+    <use href="#dot" x="80" y="-40"/>
+    <use href="#dot" x="90" y="-15"/>
+    <use href="#dot" x="90" y="15"/>
+    <use href="#dot" x="80" y="40"/>
+    <use href="#dot" x="60" y="60"/>
+
+    <!-- Top & Bottom Connections -->
+    <use href="#dot" x="-30" y="-75"/>
+    <use href="#dot" x="0" y="-80"/>
+    <use href="#dot" x="30" y="-75"/>
+    
+    <use href="#dot" x="-30" y="75"/>
+    <use href="#dot" x="0" y="80"/>
+    <use href="#dot" x="30" y="75"/>
+
+    <!-- Inner Core (The AI) -->
+    <!-- A solid looking block made of dots -->
+    <use href="#dot" x="-15" y="-15"/>
+    <use href="#dot" x="15" y="-15"/>
+    <use href="#dot" x="-15" y="15"/>
+    <use href="#dot" x="15" y="15"/>
+    
+    <!-- The Red Accent (Nothing Style "Recording" indicator) -->
+    <!-- Placed asymmetrically -->
+    <use href="#red-dot" x="50" y="-50" transform="scale(1.5)"/>
+  </g>
+
+  <!-- === TYPOGRAPHY "LUMO" === -->
+  <!-- Shifted down to avoid overlap. Using a tighter dot grid. -->
+  <g transform="translate(136, 340)">
+    
+    <!-- L -->
+    <g transform="translate(0, 0)">
+      <use href="#dot" x="0" y="0"/>
+      <use href="#dot" x="0" y="20"/>
+      <use href="#dot" x="0" y="40"/>
+      <use href="#dot" x="0" y="60"/>
+      <use href="#dot" x="20" y="60"/>
+      <use href="#dot" x="40" y="60"/>
+    </g>
+
+    <!-- U -->
+    <g transform="translate(60, 0)">
+      <use href="#dot" x="0" y="0"/>
+      <use href="#dot" x="0" y="20"/>
+      <use href="#dot" x="0" y="40"/>
+      <use href="#dot" x="0" y="60"/>
+      <use href="#dot" x="20" y="60"/>
+      <use href="#dot" x="40" y="60"/>
+      <use href="#dot" x="40" y="40"/>
+      <use href="#dot" x="40" y="20"/>
+      <use href="#dot" x="40" y="0"/>
+    </g>
+
+    <!-- M -->
+    <g transform="translate(120, 0)">
+      <use href="#dot" x="0" y="60"/>
+      <use href="#dot" x="0" y="40"/>
+      <use href="#dot" x="0" y="20"/>
+      <use href="#dot" x="0" y="0"/>
+      <use href="#dot" x="20" y="20"/>
+      <use href="#dot" x="40" y="0"/>
+      <use href="#dot" x="40" y="20"/>
+      <use href="#dot" x="40" y="40"/>
+      <use href="#dot" x="40" y="60"/>
+    </g>
+
+    <!-- O -->
+    <g transform="translate(180, 0)">
+      <use href="#dot" x="0" y="20"/>
+      <use href="#dot" x="0" y="40"/>
+      <use href="#dot" x="20" y="60"/>
+      <use href="#dot" x="40" y="40"/>
+      <use href="#dot" x="40" y="20"/>
+      <use href="#dot" x="20" y="0"/>
+    </g>
+    
+  </g>
+</svg>
